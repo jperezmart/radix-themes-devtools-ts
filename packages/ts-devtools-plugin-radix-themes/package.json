@@ -1,6 +1,6 @@
 {
   "name": "ts-devtools-plugin-radix-themes",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "TanStack Devtools plugin for Radix UI Themes — customize your theme in real time from the devtools panel",
   "type": "module",
   "main": "./dist/index.cjs",

@@ -157,7 +157,7 @@ type RadixThemeConfig = {
 
 The `0.2.0` release reshapes the API so the provider stops pulling devtools code into production bundles.
 
-> **Automated migration:** there is an [Agent Skill](https://github.com/JavierBrooktec/radix-themes-devtools-ts/tree/main/skills/migrate-ts-devtools-plugin-radix-themes-v0.1-to-v0.2) that performs every step below (rename, split imports, inline plugin instantiation, typecheck & build). Install with `npx skills add JavierBrooktec/radix-themes-devtools-ts` and run `/migrate-ts-devtools-plugin-radix-themes-v0.1-to-v0.2` from Claude Code, Cursor, Codex or any [skills.sh](https://www.skills.sh/)-compatible client.
+> **Automated migration:** there is an [Agent Skill](https://github.com/jperezmart/radix-themes-devtools-ts/tree/main/skills/migrate-ts-devtools-plugin-radix-themes-v0.1-to-v0.2) that performs every step below (rename, split imports, inline plugin instantiation, typecheck & build). Install with `npx skills add jperezmart/radix-themes-devtools-ts` and run `/migrate-ts-devtools-plugin-radix-themes-v0.1-to-v0.2` from Claude Code, Cursor, Codex or any [skills.sh](https://www.skills.sh/)-compatible client.
 
 | Before (`0.1.x`)                                                  | After (`0.2.0`)                                                                   |
 | ----------------------------------------------------------------- | --------------------------------------------------------------------------------- |
@@ -172,4 +172,4 @@ The provider no longer needs the `plugin` instance — it picks up theme changes
 
 ## License
 
-MIT © [Javier Pérez](https://github.com/JavierBrooktec)
+MIT © [Javier Pérez](https://github.com/jperezmart)

@@ -33,4 +33,4 @@ Issues and PRs are welcome. Please open an issue first for significant changes.
 
 ## License
 
-MIT © [Javier Pérez](https://github.com/JavierBrooktec)
+MIT © [Javier Pérez](https://github.com/jperezmart)

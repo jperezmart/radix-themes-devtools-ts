@@ -26,7 +26,7 @@ Copilot y cualquier cliente que entienda ese formato.
 Vía [skills.sh](https://www.skills.sh/):
 
 ```bash
-npx skills add JavierBrooktec/radix-themes-devtools-ts
+npx skills add jperezmart/radix-themes-devtools-ts
 ```
 
 Esto registra el skill en el directorio de skills de tu cliente.
@@ -68,4 +68,4 @@ O bórralo manualmente del directorio de skills de tu cliente:
 
 ## Licencia
 
-MIT © [Javier Pérez](https://github.com/JavierBrooktec)
+MIT © [Javier Pérez](https://github.com/jperezmart)

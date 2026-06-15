@@ -76,10 +76,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/JavierBrooktec/radix-themes-devtools-ts"
+    "url": "https://github.com/jperezmart/radix-themes-devtools-ts"
   },
-  "homepage": "https://github.com/JavierBrooktec/radix-themes-devtools-ts#readme",
+  "homepage": "https://github.com/jperezmart/radix-themes-devtools-ts#readme",
   "bugs": {
-    "url": "https://github.com/JavierBrooktec/radix-themes-devtools-ts/issues"
+    "url": "https://github.com/jperezmart/radix-themes-devtools-ts/issues"
   }
 }

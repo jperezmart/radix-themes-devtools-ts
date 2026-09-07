@@ -57,8 +57,8 @@ The package exposes two independent entry points so that the dev-only code can b
 Use it where you would normally put Radix's `<Theme>`. It works the same way in both dev and prod — in prod it just renders a static `<Theme>` because no devtools events ever fire.
 
 ```tsx
-import { RadixThemeProvider } from 'ts-devtools-plugin-radix-themes/provider'
-import '@radix-ui/themes/styles.css'
+import { RadixThemeProvider } from 'ts-devtools-plugin-radix-themes/provider';
+import '@radix-ui/themes/styles.css';
 
 const defaultTheme = {
   accentColor: 'indigo',
@@ -67,10 +67,14 @@ const defaultTheme = {
   radius: 'medium',
   scaling: '100%',
   panelBackground: 'translucent',
-} as const
+} as const;
 
 export function App({ children }) {
-  return <RadixThemeProvider defaultTheme={defaultTheme}>{children}</RadixThemeProvider>
+  return (
+    <RadixThemeProvider defaultTheme={defaultTheme}>
+      {children}
+    </RadixThemeProvider>
+  );
 }
 ```
 
@@ -79,8 +83,8 @@ export function App({ children }) {
 Create the plugin **inline** in the `plugins` array. That way, when [`@tanstack/devtools-vite`](https://www.npmjs.com/package/@tanstack/devtools-vite) strips the `<TanStackDevtools>` JSX in production, the import to `/plugin` becomes unused and is fully tree-shaken — including the transitive `@tanstack/devtools-event-client`.
 
 ```tsx
-import { TanStackDevtools } from '@tanstack/react-devtools'
-import { createRadixThemePlugin } from 'ts-devtools-plugin-radix-themes/plugin'
+import { TanStackDevtools } from '@tanstack/react-devtools';
+import { createRadixThemePlugin } from 'ts-devtools-plugin-radix-themes/plugin';
 
 export function Root({ children }) {
   return (
@@ -93,7 +97,7 @@ export function Root({ children }) {
         ]}
       />
     </>
-  )
+  );
 }
 ```
 
@@ -145,13 +149,13 @@ All fields are optional and map 1:1 to Radix's `<Theme>` props:
 
 ```ts
 type RadixThemeConfig = {
-  accentColor?: ThemeProps['accentColor'] // 'indigo' | 'blue' | 'mint' | ...
-  grayColor?: ThemeProps['grayColor'] // 'gray' | 'mauve' | 'slate' | ...
-  appearance?: ThemeProps['appearance'] // 'light' | 'dark'
-  radius?: ThemeProps['radius'] // 'none' | 'small' | 'medium' | 'large' | 'full'
-  scaling?: ThemeProps['scaling'] // '90%' | '95%' | '100%' | '105%' | '110%'
-  panelBackground?: ThemeProps['panelBackground'] // 'solid' | 'translucent'
-}
+  accentColor?: ThemeProps['accentColor']; // 'indigo' | 'blue' | 'mint' | ...
+  grayColor?: ThemeProps['grayColor']; // 'gray' | 'mauve' | 'slate' | ...
+  appearance?: ThemeProps['appearance']; // 'light' | 'dark'
+  radius?: ThemeProps['radius']; // 'none' | 'small' | 'medium' | 'large' | 'full'
+  scaling?: ThemeProps['scaling']; // '90%' | '95%' | '100%' | '105%' | '110%'
+  panelBackground?: ThemeProps['panelBackground']; // 'solid' | 'translucent'
+};
 ```
 
 ---

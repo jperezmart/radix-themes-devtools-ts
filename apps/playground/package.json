@@ -1,14 +1,14 @@
 {
   "name": "playground",
-  "private": true,
   "version": "0.0.1",
+  "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
     "build": "tsc --noEmit && vite build",
+    "dev": "vite",
     "lint": "tsc --noEmit",
-    "typecheck": "tsc --noEmit",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@radix-ui/themes": "^3.2.1",
@@ -16,9 +16,9 @@
     "@tanstack/react-devtools": "latest",
     "@tanstack/react-router": "^1.114.4",
     "@tanstack/router-plugin": "^1.114.4",
-    "ts-devtools-plugin-radix-themes": "workspace:*",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "ts-devtools-plugin-radix-themes": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

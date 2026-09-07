@@ -1,5 +1,5 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { Heading, Text } from '@radix-ui/themes'
+import { createFileRoute } from '@tanstack/react-router';
+import { Heading, Text } from '@radix-ui/themes';
 
 export const Route = createFileRoute('/about')({
   component: () => (
@@ -10,4 +10,4 @@ export const Route = createFileRoute('/about')({
       </Text>
     </>
   ),
-})
+});

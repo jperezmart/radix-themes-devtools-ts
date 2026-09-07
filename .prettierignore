@@ -12,19 +12,41 @@ CHANGELOG.md
 # Excluding it is what honours the exclusion; reformatting it would not.
 skills/
 
-# CANON — keep this entry. Hole 3 puts `pnpm format` at the end of
-# `changeset:version`, so without it the formatter rewrites a file the standard
-# says is copied verbatim, on every version run, silently — the defect ticket 13
-# found in jperezmart/config, where a `printWidth` of 80 reflowed it.
+# CANON — keep this entry, and understand that it is now load-bearing. Hole 3
+# puts `pnpm format` at the end of `changeset:version`, and the format glob
+# `**/*.{ts,tsx,json,md}` reaches this file, so without this entry the formatter
+# would rewrite a file the standard says is copied verbatim — on every version
+# run, silently. That is the defect ticket 13 found in jperezmart/config.
 #
-# Measured here rather than assumed, and the honest answer is that it does not
-# bite *today*: the format script globs `**/*.{ts,tsx,json,md}` so it does reach
-# this file, but the canon's longest line is 99 characters against a `printWidth`
-# of 100, and Prettier leaves it alone. **One character of margin.** The line
-# that decides it carries the repo name — `"changelog": [..., { "repo":
-# "jperezmart/radix-themes-devtools-ts" }]` — so a rename one character longer,
-# or any narrowing of printWidth, silently starts rewriting the canon. This entry
-# is the guard for that, not a fix for a live break.
+# Ticket 20 measured it as precautionary: the canon's longest line is 99
+# characters, and against the repo's old `printWidth` of 100 Prettier left it
+# alone. **One character of margin.** Ticket 22 spent that margin. Adopting
+# `@jperezmart/prettier-config` moved `printWidth` to 80, and the line that
+# carries the repo name — `"changelog": [..., { "repo":
+# "jperezmart/radix-themes-devtools-ts" }]` — now reflows onto four lines.
+# Measured, not assumed: remove this entry and `pnpm format` rewrites the canon
+# on the next `changeset:version`.
+#
+# The shared config also ships `prettier-plugin-sort-json`. That was expected to
+# be a second, independent rewrite, and measuring it says otherwise: the canon's
+# ten keys are already in the plugin's output order, so today it is a no-op.
+# Recorded as a latent risk rather than a live one — a key added out of order
+# would wake it, and unlike `printWidth` no line length would warn first.
 #
 # `release.yml` needs no entry: the same glob excludes YAML.
 .changeset/config.json
+
+# GENERATED — the file says so itself: "you should also exclude this file from
+# your linter and/or formatter to prevent it from being checked or modified."
+# Taking it at its word, measured: formatting it and then running
+# `pnpm --filter playground build` reverts all 68 lines, because
+# @tanstack/router-plugin rewrites the file from its own template on every
+# build. So without this entry the repo cannot hold a formatted state —
+# `pnpm format` and any build disagree permanently, and `prettier --check`
+# fails after whichever ran last.
+#
+# This predates ticket 22: the file was not prettier-clean at HEAD under the old
+# config either, so `pnpm format` inside `changeset:version` would already have
+# rewritten it. Adopting the shared config only made the churn bigger (semicolons
+# and `printWidth: 80` on top of the quote style), which is what made it visible.
+apps/playground/src/routeTree.gen.ts

@@ -1,12 +1,14 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense } from 'react';
 
-import { RadixThemeEventClient } from './client'
-import type { RadixThemePluginOptions } from './types'
+import { RadixThemeEventClient } from './client';
+import type { RadixThemePluginOptions } from './types';
 
-const RadixThemePanel = lazy(() => import('./panel').then((m) => ({ default: m.RadixThemePanel })))
+const RadixThemePanel = lazy(() =>
+  import('./panel').then(m => ({ default: m.RadixThemePanel })),
+);
 
 export function createRadixThemePlugin(options: RadixThemePluginOptions = {}) {
-  const client = new RadixThemeEventClient(options.defaultTheme)
+  const client = new RadixThemeEventClient(options.defaultTheme);
 
   return {
     name: 'Radix Themes',
@@ -16,5 +18,5 @@ export function createRadixThemePlugin(options: RadixThemePluginOptions = {}) {
       </Suspense>
     ),
     client,
-  }
+  };
 }

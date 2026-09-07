@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
-import type { RadixThemeConfig } from './types'
-import type { RadixThemeEventClient } from './client'
+import { useState, useEffect } from 'react';
+import type { RadixThemeConfig } from './types';
+import type { RadixThemeEventClient } from './client';
 
 const ACCENT_COLORS: RadixThemeConfig['accentColor'][] = [
   'gray',
@@ -29,7 +29,7 @@ const ACCENT_COLORS: RadixThemeConfig['accentColor'][] = [
   'lime',
   'mint',
   'sky',
-]
+];
 
 const GRAY_COLORS: RadixThemeConfig['grayColor'][] = [
   'gray',
@@ -38,15 +38,27 @@ const GRAY_COLORS: RadixThemeConfig['grayColor'][] = [
   'sage',
   'olive',
   'sand',
-]
+];
 
-const RADIUS_VALUES: RadixThemeConfig['radius'][] = ['none', 'small', 'medium', 'large', 'full']
+const RADIUS_VALUES: RadixThemeConfig['radius'][] = [
+  'none',
+  'small',
+  'medium',
+  'large',
+  'full',
+];
 
-const SCALING_VALUES: RadixThemeConfig['scaling'][] = ['90%', '95%', '100%', '105%', '110%']
+const SCALING_VALUES: RadixThemeConfig['scaling'][] = [
+  '90%',
+  '95%',
+  '100%',
+  '105%',
+  '110%',
+];
 
 interface PanelProps {
-  client: RadixThemeEventClient
-  defaultTheme?: RadixThemeConfig
+  client: RadixThemeEventClient;
+  defaultTheme?: RadixThemeConfig;
 }
 
 export function RadixThemePanel({ client, defaultTheme }: PanelProps) {
@@ -59,19 +71,19 @@ export function RadixThemePanel({ client, defaultTheme }: PanelProps) {
     panelBackground: 'translucent',
     ...defaultTheme,
     ...client.currentTheme,
-  })
+  });
 
   function update(patch: Partial<RadixThemeConfig>) {
-    const next = { ...theme, ...patch }
-    setTheme(next)
-    client.currentTheme = next
-    client.emit('theme-changed', next)
+    const next = { ...theme, ...patch };
+    setTheme(next);
+    client.currentTheme = next;
+    client.emit('theme-changed', next);
   }
 
   useEffect(() => {
-    client.currentTheme = theme
-    client.emit('theme-changed', theme)
-  }, [])
+    client.currentTheme = theme;
+    client.emit('theme-changed', theme);
+  }, []);
 
   return (
     <div
@@ -88,7 +100,7 @@ export function RadixThemePanel({ client, defaultTheme }: PanelProps) {
         <ColorGrid
           colors={ACCENT_COLORS}
           selected={theme.accentColor}
-          onSelect={(v) => update({ accentColor: v })}
+          onSelect={v => update({ accentColor: v })}
         />
       </Section>
 
@@ -96,7 +108,7 @@ export function RadixThemePanel({ client, defaultTheme }: PanelProps) {
         <ColorGrid
           colors={GRAY_COLORS}
           selected={theme.grayColor}
-          onSelect={(v) => update({ grayColor: v })}
+          onSelect={v => update({ grayColor: v })}
         />
       </Section>
 
@@ -104,7 +116,9 @@ export function RadixThemePanel({ client, defaultTheme }: PanelProps) {
         <ToggleGroup
           options={['light', 'dark']}
           selected={theme.appearance}
-          onSelect={(v) => update({ appearance: v as RadixThemeConfig['appearance'] })}
+          onSelect={v =>
+            update({ appearance: v as RadixThemeConfig['appearance'] })
+          }
         />
       </Section>
 
@@ -112,7 +126,7 @@ export function RadixThemePanel({ client, defaultTheme }: PanelProps) {
         <ToggleGroup
           options={RADIUS_VALUES as string[]}
           selected={theme.radius}
-          onSelect={(v) => update({ radius: v as RadixThemeConfig['radius'] })}
+          onSelect={v => update({ radius: v as RadixThemeConfig['radius'] })}
         />
       </Section>
 
@@ -120,7 +134,7 @@ export function RadixThemePanel({ client, defaultTheme }: PanelProps) {
         <ToggleGroup
           options={SCALING_VALUES as string[]}
           selected={theme.scaling}
-          onSelect={(v) => update({ scaling: v as RadixThemeConfig['scaling'] })}
+          onSelect={v => update({ scaling: v as RadixThemeConfig['scaling'] })}
         />
       </Section>
 
@@ -128,13 +142,17 @@ export function RadixThemePanel({ client, defaultTheme }: PanelProps) {
         <ToggleGroup
           options={['solid', 'translucent']}
           selected={theme.panelBackground}
-          onSelect={(v) => update({ panelBackground: v as RadixThemeConfig['panelBackground'] })}
+          onSelect={v =>
+            update({
+              panelBackground: v as RadixThemeConfig['panelBackground'],
+            })
+          }
         />
       </Section>
 
       <button
         onClick={() => {
-          client.emit('theme-reset', undefined)
+          client.emit('theme-reset', undefined);
         }}
         style={{
           marginTop: '8px',
@@ -147,18 +165,30 @@ export function RadixThemePanel({ client, defaultTheme }: PanelProps) {
         Reset
       </button>
     </div>
-  )
+  );
 }
 
-function Section({ label, children }: { label: string; children: React.ReactNode }) {
+function Section({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <div>
-      <div style={{ fontWeight: 600, marginBottom: '8px', textTransform: 'capitalize' }}>
+      <div
+        style={{
+          fontWeight: 600,
+          marginBottom: '8px',
+          textTransform: 'capitalize',
+        }}
+      >
         {label}
       </div>
       {children}
     </div>
-  )
+  );
 }
 
 function ColorGrid<T extends string>({
@@ -166,13 +196,13 @@ function ColorGrid<T extends string>({
   selected,
   onSelect,
 }: {
-  colors: (T | undefined)[]
-  selected: T | undefined
-  onSelect: (v: T) => void
+  colors: (T | undefined)[];
+  selected: T | undefined;
+  onSelect: (v: T) => void;
 }) {
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-      {colors.map((color) => (
+      {colors.map(color => (
         <button
           key={color}
           title={color}
@@ -181,7 +211,8 @@ function ColorGrid<T extends string>({
             width: '20px',
             height: '20px',
             borderRadius: '50%',
-            border: selected === color ? '2px solid #000' : '2px solid transparent',
+            border:
+              selected === color ? '2px solid #000' : '2px solid transparent',
             background: `var(--${color}-9, ${color})`,
             cursor: 'pointer',
             padding: 0,
@@ -189,7 +220,7 @@ function ColorGrid<T extends string>({
         />
       ))}
     </div>
-  )
+  );
 }
 
 function ToggleGroup({
@@ -197,13 +228,13 @@ function ToggleGroup({
   selected,
   onSelect,
 }: {
-  options: string[]
-  selected: string | undefined
-  onSelect: (v: string) => void
+  options: string[];
+  selected: string | undefined;
+  onSelect: (v: string) => void;
 }) {
   return (
     <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-      {options.map((opt) => (
+      {options.map(opt => (
         <button
           key={opt}
           onClick={() => onSelect(opt)}
@@ -220,5 +251,5 @@ function ToggleGroup({
         </button>
       ))}
     </div>
-  )
+  );
 }

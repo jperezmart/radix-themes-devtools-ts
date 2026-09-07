@@ -10,8 +10,8 @@ function Home() {
     <Flex direction="column" gap="6" maxWidth="600px">
       <Heading size="8">Radix Themes Devtools</Heading>
       <Text color="gray">
-        Open the TanStack Devtools panel and go to the <Badge>Radix Themes</Badge> tab
-        to customize the theme in real time.
+        Open the TanStack Devtools panel and go to the <Badge>Radix Themes</Badge> tab to customize
+        the theme in real time.
       </Text>
 
       <Card>

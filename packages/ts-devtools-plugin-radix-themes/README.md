@@ -1,5 +1,8 @@
 # ts-devtools-plugin-radix-themes
 
+[![npm version](https://img.shields.io/npm/v/ts-devtools-plugin-radix-themes.svg)](https://www.npmjs.com/package/ts-devtools-plugin-radix-themes)
+[![license](https://img.shields.io/npm/l/ts-devtools-plugin-radix-themes.svg)](./LICENSE)
+
 A [TanStack Devtools](https://tanstack.com/devtools/latest) plugin that lets you customize your [Radix UI Themes](https://www.radix-ui.com/themes) in real time — directly from the devtools panel.
 
 Change accent color, gray, radius, scaling, appearance and panel background without touching your code, and see the changes live in your app.

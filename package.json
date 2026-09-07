@@ -3,18 +3,28 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
+    "changeset": "changeset",
+    "changeset:publish": "changeset publish",
+    "changeset:version": "changeset version && pnpm install --no-frozen-lockfile && pnpm format",
     "dev": "turbo dev",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
     "lint": "turbo lint",
-    "typecheck": "turbo typecheck",
-    "format": "prettier --write \"**/*.{ts,tsx,json,md}\""
+    "test": "turbo test",
+    "typecheck": "turbo typecheck"
   },
   "devDependencies": {
+    "@changesets/changelog-github": "^1.0.0",
+    "@changesets/cli": "^3.0.1",
     "prettier": "^3.4.2",
     "turbo": "^2.3.3",
     "typescript": "^5.7.3"
   },
-  "engines": {
-    "node": ">=20"
-  },
-  "packageManager": "pnpm@9.15.4"
+  "packageManager": "pnpm@11.25.0",
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "24.20.0",
+      "onFail": "error"
+    }
+  }
 }

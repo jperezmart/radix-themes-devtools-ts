@@ -1,0 +1,30 @@
+node_modules
+dist
+coverage
+.turbo
+pnpm-lock.yaml
+*.tsbuildinfo
+CHANGELOG.md
+
+# Out of scope for the publishing effort (ticket 20: "Not the `skills/`
+# directory"), and the format glob `**/*.{ts,tsx,json,md}` would otherwise reach
+# it — so hole 3's `pnpm format` would reformat it inside a Version Packages PR.
+# Excluding it is what honours the exclusion; reformatting it would not.
+skills/
+
+# CANON — keep this entry. Hole 3 puts `pnpm format` at the end of
+# `changeset:version`, so without it the formatter rewrites a file the standard
+# says is copied verbatim, on every version run, silently — the defect ticket 13
+# found in jperezmart/config, where a `printWidth` of 80 reflowed it.
+#
+# Measured here rather than assumed, and the honest answer is that it does not
+# bite *today*: the format script globs `**/*.{ts,tsx,json,md}` so it does reach
+# this file, but the canon's longest line is 99 characters against a `printWidth`
+# of 100, and Prettier leaves it alone. **One character of margin.** The line
+# that decides it carries the repo name — `"changelog": [..., { "repo":
+# "jperezmart/radix-themes-devtools-ts" }]` — so a rename one character longer,
+# or any narrowing of printWidth, silently starts rewriting the canon. This entry
+# is the guard for that, not a fix for a live break.
+#
+# `release.yml` needs no entry: the same glob excludes YAML.
+.changeset/config.json

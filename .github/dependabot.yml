@@ -1,0 +1,43 @@
+# SCAFFOLDING — but keep it, or something like it.
+#
+# The actions in release.yml and ci.yml are pinned by commit SHA. A SHA without
+# a bot to move it is not security, it is fossilisation — and release.yml is the
+# file you will touch least, so its pins would fossilise hardest. Dependabot
+# rewrites both the hash and the trailing `# vX.Y.Z` comment, keeping them alive.
+#
+# Monthly and grouped: these actions ship roughly one major a year, so this is
+# the least noise that keeps the pins current.
+
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: / # literal: the repo root. Dependabot finds .github/workflows itself
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ['*']
+
+  # Required by the caret ranges in the two package.json files: without this
+  # block they never refresh in the lockfile. This repo does not consume
+  # @jperezmart/config, which is what the template's copy of this comment cites.
+  #
+  # Note what it does NOT do: Dependabot moves no version *field* — not
+  # `packageManager`, not `engines.node`, not `devEngines`. Node and pnpm are
+  # hand-edited on purpose. The standard demands a floor, not latest.
+  - package-ecosystem: npm
+    directories:
+      - /
+      - /packages/*
+    schedule:
+      interval: monthly
+    groups:
+      npm:
+        patterns: ['*']
+    # Within-range refreshes only. A major rewrites the range rather than
+    # refreshing it, and that is a human's call — the standard demands a floor,
+    # not latest.
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-major

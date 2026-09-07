@@ -1,3 +1,20 @@
 packages:
   - 'packages/*'
   - 'apps/*'
+
+# pnpm >= 10 blocks a dependency's build scripts until they are declared here,
+# and without this `pnpm install` exits 1 with ERR_PNPM_IGNORED_BUILDS, which
+# would fail release.yml at its install step. Only esbuild is reported — two
+# copies of it, pulled in by vite and vitest.
+#
+# Declined rather than approved, keeping script execution out of the install
+# that release.yml shares. Ticket 18's correction — a declined build can hide
+# its cost in a cache outside the repo, so a local pass proves nothing — does
+# not apply here, and the reason is structural rather than "it worked on this
+# machine": esbuild's binary is a lockfile-recorded optional dependency (104
+# `@esbuild/*` entries across the two versions, cpu/os-gated, including the
+# linux-x64 a runner installs), and install.js only downloads when
+# `require.resolve` of that package fails, which it cannot. The full command
+# chain — build, typecheck, lint, test — is verified with the build declined.
+allowBuilds:
+  esbuild: false

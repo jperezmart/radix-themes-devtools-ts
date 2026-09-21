@@ -1,44 +1,44 @@
 ---
 name: migrate-ts-devtools-plugin-radix-themes-v0.1-to-v0.2
 description: |
-  Usa este skill para migrar proyectos de ts-devtools-plugin-radix-themes
-  v0.1.x a v0.2.x. Cubre el rename de RadixThemeDevtoolsProvider, los nuevos
-  subpath exports (/provider y /plugin), y el patrón de instanciación inline
-  necesario para que el bundle de producción no arrastre código de devtools.
+  Use this skill to migrate projects from ts-devtools-plugin-radix-themes
+  v0.1.x to v0.2.x. It covers the RadixThemeDevtoolsProvider rename, the new
+  subpath exports (/provider and /plugin), and the inline instantiation
+  pattern needed to keep devtools code out of the production bundle.
 command: /migrate-ts-devtools-plugin-radix-themes-v0.1-to-v0.2
 ---
 
-# Migración ts-devtools-plugin-radix-themes v0.1 → v0.2
+# Migrating ts-devtools-plugin-radix-themes v0.1 → v0.2
 
 ## Breaking changes
 
-1. **Provider renombrado**: `RadixThemeDevtoolsProvider` → `RadixThemeProvider`.
-2. **Firma del provider**: deja de aceptar `plugin`; ahora acepta `defaultTheme`.
-3. **Subpath exports nuevos**: `/provider` (prod-safe, sin devtools deps) y `/plugin` (dev-only). El barrel sigue existiendo pero rompe el tree-shaking.
-4. **Patrón inline obligatorio**: instancia `createRadixThemePlugin(...)` dentro del array `plugins={[…]}` de `<TanStackDevtools>`. NO la asignes a un `const` top-level — eso impide que `@tanstack/devtools-vite` strippee el código en prod y deja ~3 KB gz de devtools en el bundle.
-5. **Tipo eliminado**: `RadixThemeDevtoolsProviderProps` ya no existe. Usa `RadixThemeProviderProps`.
-6. **peer dep opcional**: `@tanstack/devtools-event-client` pasa a `peerDependenciesMeta.optional` — sólo lo necesitas si importas de `/plugin`.
+1. **Provider renamed**: `RadixThemeDevtoolsProvider` → `RadixThemeProvider`.
+2. **Provider signature**: it no longer accepts `plugin`; it accepts `defaultTheme`.
+3. **New subpath exports**: `/provider` (prod-safe, no devtools deps) and `/plugin` (dev-only). The barrel still exists but defeats tree-shaking.
+4. **Inline pattern required**: instantiate `createRadixThemePlugin(...)` inside the `plugins={[…]}` array of `<TanStackDevtools>`. Do NOT assign it to a top-level `const` — that stops `@tanstack/devtools-vite` from stripping the code in prod and leaves ~3 KB gz of devtools in the bundle.
+5. **Type removed**: `RadixThemeDevtoolsProviderProps` is gone. Use `RadixThemeProviderProps`.
+6. **Optional peer dep**: `@tanstack/devtools-event-client` moves to `peerDependenciesMeta.optional` — you only need it if you import from `/plugin`.
 
-## Orden de migración
+## Migration order
 
-### Paso 1 — Comprueba que aplica
+### Step 1 — Check that this applies
 
-Lee el `package.json` del proyecto. Si `ts-devtools-plugin-radix-themes` no aparece, aborta y avisa al usuario. Si la versión ya es `^0.2.0` o mayor, aborta.
+Read the project's `package.json`. If `ts-devtools-plugin-radix-themes` is not there, abort and tell the user. If the version is already `^0.2.0` or greater, abort.
 
-En monorepos, busca también en `pnpm-workspace.yaml` bajo `catalog:` y en los `package.json` de cada `apps/*` y `packages/*`.
+In monorepos, look in `pnpm-workspace.yaml` under `catalog:` too, and in each `apps/*` and `packages/*` `package.json`.
 
-### Paso 2 — Sube la versión
+### Step 2 — Bump the version
 
-Actualiza la versión a `^0.2.0`:
+Set the version to `^0.2.0`:
 
-- `package.json` directo: edita la línea correspondiente.
-- pnpm catalog: actualiza `pnpm-workspace.yaml` → `catalog.ts-devtools-plugin-radix-themes: ^0.2.0`.
+- Plain `package.json`: edit the line.
+- pnpm catalog: update `pnpm-workspace.yaml` → `catalog.ts-devtools-plugin-radix-themes: ^0.2.0`.
 
-Ejecuta el package manager del proyecto para regenerar el lockfile (lee `packageManager` en el `package.json` raíz). Ej.: `pnpm install`, `npm install`, `yarn install`.
+Run the project's package manager to regenerate the lockfile (read `packageManager` in the root `package.json`). E.g. `pnpm install`, `npm install`, `yarn install`.
 
-### Paso 3 — Localiza usos
+### Step 3 — Locate the usages
 
-Ejecuta estos greps desde la raíz del proyecto:
+Run these greps from the project root:
 
 ```bash
 grep -rn "RadixThemeDevtoolsProvider" --include="*.ts" --include="*.tsx" .
@@ -47,13 +47,13 @@ grep -rn "from 'ts-devtools-plugin-radix-themes'" --include="*.ts" --include="*.
 grep -rn "RadixThemeDevtoolsProviderProps" --include="*.ts" --include="*.tsx" .
 ```
 
-Lista todos los archivos resultantes antes de tocarlos.
+List every file that comes back before touching any of them.
 
-### Paso 4 — Migra el provider
+### Step 4 — Migrate the provider
 
-Cambia el import al subpath `/provider`, renombra el componente y sustituye la prop `plugin` por `defaultTheme`. El valor de `defaultTheme` es el mismo objeto que se pasaba antes a `createRadixThemePlugin({ defaultTheme: … })`; extráelo a una `const` reutilizable si vive inline.
+Change the import to the `/provider` subpath, rename the component, and replace the `plugin` prop with `defaultTheme`. The value of `defaultTheme` is the same object previously passed to `createRadixThemePlugin({ defaultTheme: … })`; extract it to a reusable `const` if it lives inline.
 
-ANTES:
+BEFORE:
 
 ```tsx
 import {
@@ -70,7 +70,7 @@ const themePlugin = createRadixThemePlugin({
 </RadixThemeDevtoolsProvider>
 ```
 
-DESPUÉS:
+AFTER:
 
 ```tsx
 import { RadixThemeProvider } from 'ts-devtools-plugin-radix-themes/provider'
@@ -82,11 +82,11 @@ const defaultTheme = { accentColor: 'indigo', radius: 'medium' } as const
 </RadixThemeProvider>
 ```
 
-### Paso 5 — Migra el `<TanStackDevtools plugins=[…]>` a inline
+### Step 5 — Move `<TanStackDevtools plugins=[…]>` to inline
 
-Cambia el import a `/plugin` y mueve la llamada `createRadixThemePlugin(...)` **dentro** del array `plugins={[…]}`. Borra cualquier `const themePlugin = createRadixThemePlugin(...)` previo.
+Change the import to `/plugin` and move the `createRadixThemePlugin(...)` call **inside** the `plugins={[…]}` array. Delete any previous `const themePlugin = createRadixThemePlugin(...)`.
 
-ANTES:
+BEFORE:
 
 ```tsx
 import { createRadixThemePlugin } from 'ts-devtools-plugin-radix-themes'
@@ -96,7 +96,7 @@ const themePlugin = createRadixThemePlugin({ defaultTheme })
 <TanStackDevtools plugins={[themePlugin]} />
 ```
 
-DESPUÉS:
+AFTER:
 
 ```tsx
 import { createRadixThemePlugin } from 'ts-devtools-plugin-radix-themes/plugin'
@@ -104,108 +104,118 @@ import { createRadixThemePlugin } from 'ts-devtools-plugin-radix-themes/plugin'
 ;<TanStackDevtools
   plugins={[
     createRadixThemePlugin({ defaultTheme }),
-    // …otros plugins
+    // …other plugins
   ]}
 />
 ```
 
-Reusa exactamente el mismo objeto `defaultTheme` que pasaste al provider en el paso 4.
+Reuse exactly the same `defaultTheme` object you passed to the provider in step 4.
 
-### Paso 6 — Limpia tipos eliminados
+### Step 6 — Clean up removed types
 
-Sustituye `RadixThemeDevtoolsProviderProps` por `RadixThemeProviderProps` importado de `/provider`:
+Replace `RadixThemeDevtoolsProviderProps` with `RadixThemeProviderProps` imported from `/provider`:
 
 ```tsx
-// antes
+// before
 import type { RadixThemeDevtoolsProviderProps } from 'ts-devtools-plugin-radix-themes'
 
-// después
+// after
 import type { RadixThemeProviderProps } from 'ts-devtools-plugin-radix-themes/provider'
 ```
 
-### Paso 7 — Verifica typecheck, lint, tests y build
+### Step 7 — Verify typecheck, lint, tests and build
 
-Lee los `scripts` del `package.json` del proyecto y ejecuta lo que aplique en este orden:
+Read the project's `package.json` scripts and run what applies, in this order:
 
 ```bash
-pnpm typecheck   # o tsc --noEmit
+pnpm typecheck   # or tsc --noEmit
 pnpm lint
 pnpm test
 pnpm build
 ```
 
-Resuelve cualquier error. Los problemas habituales son:
+Resolve any errors. The usual ones are:
 
-- Imports residuales del barrel: cambia a subpath.
-- Tipos rotos por `RadixThemeDevtoolsProviderProps`: ver paso 6.
-- Tests que mockean el paquete: el path del `vi.mock(...)` debe ser `/provider` o `/plugin` según lo que mockee.
+- Leftover barrel imports: switch them to a subpath.
+- Types broken by `RadixThemeDevtoolsProviderProps`: see step 6.
+- Tests mocking the package: the `vi.mock(...)` path must be `/provider` or `/plugin`, depending on what it mocks.
 
-### Paso 8 — Verifica el strip de devtools en prod (sólo si el proyecto usa `@tanstack/devtools-vite`)
+### Step 8 — Verify the prod devtools strip (only if the project uses `@tanstack/devtools-vite`)
 
-Comprueba que `vite.config.ts` incluye `devtools()` de `@tanstack/devtools-vite` antes del resto de plugins. Si no lo incluye, sugiere al usuario añadirlo — sin él, el plugin sigue pesando en prod:
+Check that `vite.config.ts` includes `devtools()` from `@tanstack/devtools-vite` ahead of the other plugins. If it does not, suggest adding it — without it the plugin still weighs on prod:
 
 ```ts
 import { devtools } from '@tanstack/devtools-vite'
 
-plugins: [devtools() /* …resto */]
+plugins: [devtools() /* …rest */]
 ```
 
-Tras el build, busca en el log la línea `[@tanstack/devtools-vite] Removed devtools code from: ...`. Si hay bundle analyzer, confirma que `dist/plugin*.js` y `@tanstack/devtools-event-client` NO aparecen en el bundle de prod.
+After the build, look for the `[@tanstack/devtools-vite] Removed devtools code from: ...` line in the log. If a bundle analyzer is available, confirm that `dist/plugin*.js` and `@tanstack/devtools-event-client` do NOT appear in the prod bundle.
 
-## Patrones comunes
+## Common patterns
 
-### Patrón A — Provider centralizado con tenant config
+### Pattern A — Centralised provider with tenant config
 
-Wrappers tipo `RadixThemesProvider` o `AppShell` que envolvían `<RadixThemeDevtoolsProvider plugin={...}>` deben renombrarse y pasar `defaultTheme` directamente:
+Wrappers such as `RadixThemesProvider` or `AppShell` that wrapped `<RadixThemeDevtoolsProvider plugin={...}>` must be renamed and pass `defaultTheme` directly:
 
 ```tsx
-// antes
+// before
 const RadixThemesProvider = ({ children }) => (
   <RadixThemeDevtoolsProvider plugin={themePlugin}>{children}</RadixThemeDevtoolsProvider>
 )
 
-// después
+// after
 const RadixThemesProvider = ({ children }) => (
   <RadixThemeProvider defaultTheme={TENANT_CONFIG.radixThemesConfig}>{children}</RadixThemeProvider>
 )
 ```
 
-### Patrón B — Archivo dedicado al plugin (`integrations/radix-themes/*.plugin.ts`)
+### Pattern B — A file dedicated to the plugin (`integrations/radix-themes/*.plugin.ts`)
 
-Si existe un archivo cuyo único propósito es crear y exportar el plugin (típicamente `radix-themes.plugin.ts`):
+If there is a file whose only purpose is to create and export the plugin (typically `radix-themes.plugin.ts`):
 
-- Si sólo lo consume `<TanStackDevtools>`: **borra el archivo** y mueve la llamada inline al JSX donde se monta `<TanStackDevtools>`.
-- Si también lo consume el provider (patrón antiguo): extrae **sólo el objeto `defaultTheme`** a un archivo compartido (p. ej. `radix-themes.config.ts`) y borra la creación del plugin de ahí.
+- If only `<TanStackDevtools>` consumes it: **delete the file** and move the call inline into the JSX where `<TanStackDevtools>` is mounted.
+- If the provider consumes it too (the old pattern): extract **only the `defaultTheme` object** to a shared file (e.g. `radix-themes.config.ts`) and delete the plugin creation from there.
 
-### Patrón C — Monorepo con varias apps
+### Pattern C — Monorepo with several apps
 
-Cada app tiene su propio `<TanStackDevtools>` y su propio provider. Repite los pasos 4–7 por app. El `defaultTheme` puede vivir en un paquete compartido del workspace.
+Each app has its own `<TanStackDevtools>` and its own provider. Repeat steps 4–7 per app. The `defaultTheme` can live in a shared workspace package.
 
-### Patrón D — Tests con mock del paquete
+### Pattern D — Tests mocking the package
 
-Cambia el path del `vi.mock`:
+Change the `vi.mock` path:
 
 ```tsx
-// antes
+// before
 vi.mock('ts-devtools-plugin-radix-themes', () => ({ … }))
 
-// después: mockea sólo el subpath relevante para ese test
+// after: mock only the subpath relevant to that test
 vi.mock('ts-devtools-plugin-radix-themes/provider', () => ({ … }))
 ```
 
-## Cierre
+## Wrap-up
 
-Reporta al usuario:
+Report to the user:
 
-1. Archivos modificados (cuenta).
-2. Resultado de typecheck / lint / test / build.
-3. Si `@tanstack/devtools-vite` está en uso y se ve el log de strip.
-4. Patrones ambiguos que dejaste sin tocar (si los hay).
+1. Files changed (count).
+2. Results of typecheck / lint / test / build.
+3. Whether `@tanstack/devtools-vite` is in use and the strip log shows up.
+4. Ambiguous patterns you left alone, if any.
 
-Indica al usuario que elimine este skill cuando la migración esté commiteada:
+If later versions have been published, tell the user the next hop has its own skill:
+
+```bash
+npx skills add jperezmart/radix-themes-devtools-ts
+```
+
+```
+/migrate-ts-devtools-plugin-radix-themes-v0.2-to-v0.3
+```
+
+Tell the user to remove this skill once the migration is committed:
 
 ```bash
 npx skills remove migrate-ts-devtools-plugin-radix-themes-v0.1-to-v0.2
 ```
 
-O bórralo manualmente del directorio de skills de su cliente (Claude Code: `~/.claude/skills/`, Cursor: `~/.cursor/skills/`, etc.). Mantener skills de migración antiguos contamina el contexto en sesiones futuras.
+Or to delete it by hand from their client's skills directory (Claude Code: `~/.claude/skills/`, Cursor: `~/.cursor/skills/`, etc.). Keeping old migration skills around pollutes the context of future sessions.

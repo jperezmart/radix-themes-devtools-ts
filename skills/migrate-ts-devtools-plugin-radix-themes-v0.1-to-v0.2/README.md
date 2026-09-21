@@ -1,71 +1,73 @@
 # Migration skill — `ts-devtools-plugin-radix-themes` v0.1 → v0.2
 
-Skill de migración automática para proyectos que consumen
-`ts-devtools-plugin-radix-themes` y necesitan actualizar de la serie `0.1.x` a
-la `0.2.x`.
+Automated migration skill for projects consuming
+`ts-devtools-plugin-radix-themes` that need to move from the `0.1.x` series to
+`0.2.x`.
 
-Sigue el estándar de [Agent Skills](https://www.skills.sh/) (`SKILL.md` con
-frontmatter), por lo que es compatible con Claude Code, Cursor, Codex, GitHub
-Copilot y cualquier cliente que entienda ese formato.
+It follows the [Agent Skills](https://www.skills.sh/) standard (`SKILL.md` with
+frontmatter), so it works with Claude Code, Cursor, Codex, GitHub Copilot and
+any client that understands the format.
 
-## Qué automatiza
+## What it automates
 
-1. Detecta el uso del paquete en el repo (incluyendo monorepos con catalog).
-2. Sube la versión a `^0.2.0` y regenera el lockfile.
-3. Renombra `RadixThemeDevtoolsProvider` → `RadixThemeProvider` y cambia su
-   firma (`plugin` → `defaultTheme`).
-4. Migra los imports al nuevo split de entry points (`/provider` y `/plugin`).
-5. Mueve la instanciación de `createRadixThemePlugin(...)` inline dentro de
-   `<TanStackDevtools plugins={[…]}>` — paso clave para que
-   `@tanstack/devtools-vite` lo strippee en producción.
-6. Limpia tipos obsoletos (`RadixThemeDevtoolsProviderProps`).
-7. Ejecuta typecheck, lint, tests y build, y reporta el resultado.
+1. Detects use of the package in the repo (including monorepos with a catalog).
+2. Bumps the version to `^0.2.0` and regenerates the lockfile.
+3. Renames `RadixThemeDevtoolsProvider` → `RadixThemeProvider` and changes its
+   signature (`plugin` → `defaultTheme`).
+4. Migrates imports to the new entry point split (`/provider` and `/plugin`).
+5. Moves the `createRadixThemePlugin(...)` call inline into
+   `<TanStackDevtools plugins={[…]}>` — the key step for
+   `@tanstack/devtools-vite` to strip it in production.
+6. Cleans up removed types (`RadixThemeDevtoolsProviderProps`).
+7. Runs typecheck, lint, tests and build, and reports the result.
 
-## Instalación
+## Installation
 
-Vía [skills.sh](https://www.skills.sh/):
+Via [skills.sh](https://www.skills.sh/):
 
 ```bash
 npx skills add jperezmart/radix-themes-devtools-ts
 ```
 
-Esto registra el skill en el directorio de skills de tu cliente.
+This registers the skill in your client's skills directory.
 
-## Uso
+## Usage
 
-Desde tu cliente, lanza el comando:
+From your client, run the command:
 
 ```
 /migrate-ts-devtools-plugin-radix-themes-v0.1-to-v0.2
 ```
 
-El agente leerá `SKILL.md` y aplicará la migración sobre el proyecto activo.
-Revisa el diff resultante antes de commitear.
+The agent reads `SKILL.md` and applies the migration to the active project.
+Review the resulting diff before committing.
 
-## Limpieza
+## Cleanup
 
-Una vez la migración esté hecha y commiteada, elimina el skill para no
-contaminar el contexto de futuras sesiones:
+Once the migration is done and committed, remove the skill so it does not
+pollute the context of future sessions:
 
 ```bash
 npx skills remove migrate-ts-devtools-plugin-radix-themes-v0.1-to-v0.2
 ```
 
-O bórralo manualmente del directorio de skills de tu cliente:
+Or delete it by hand from your client's skills directory:
 
-| Cliente     | Ruta                                                                     |
-| ----------- | ------------------------------------------------------------------------ |
+| Client      | Path                                                                    |
+| ----------- | ----------------------------------------------------------------------- |
 | Claude Code | `~/.claude/skills/migrate-ts-devtools-plugin-radix-themes-v0.1-to-v0.2/` |
 | Cursor      | `~/.cursor/skills/migrate-ts-devtools-plugin-radix-themes-v0.1-to-v0.2/` |
-| Otros       | Consulta la doc del cliente.                                             |
+| Other       | Check your client's docs.                                               |
 
-## Compatibilidad
+## Compatibility
 
-- Target: `ts-devtools-plugin-radix-themes` ≥ `0.2.0`.
-- Bundler-agnóstico (Vite, Next.js, Webpack, Rspack…). La verificación de
-  bundle stripping del paso 8 sólo aplica si el proyecto usa
-  `@tanstack/devtools-vite`; el resto de la migración funciona en todos.
+- Target: `ts-devtools-plugin-radix-themes` `0.2.x`. To continue to `0.3.x`,
+  chain with
+  [`migrate-…-v0.2-to-v0.3`](../migrate-ts-devtools-plugin-radix-themes-v0.2-to-v0.3).
+- Bundler-agnostic (Vite, Next.js, Webpack, Rspack…). The bundle-stripping
+  check in step 8 only applies if the project uses `@tanstack/devtools-vite`;
+  the rest of the migration works everywhere.
 
-## Licencia
+## License
 
 MIT © [Javier Pérez](https://github.com/jperezmart)

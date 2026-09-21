@@ -196,6 +196,47 @@ type RadixThemeConfig = {
 
 ---
 
+## Migrating from `0.2.x`
+
+**In the common case there is nothing to do.** Upgrade and carry on — the
+`0.3.0` release is additive. It is a minor rather than a patch because on a
+`0.x` line that is the signal for "read this first", not because the documented
+API moved.
+
+> **Automated migration:** there is an [Agent Skill](https://github.com/jperezmart/radix-themes-devtools-ts/tree/main/skills/migrate-ts-devtools-plugin-radix-themes-v0.2-to-v0.3) that bumps the version, checks the two items below and offers the new options. Install with `npx skills add jperezmart/radix-themes-devtools-ts` and run `/migrate-ts-devtools-plugin-radix-themes-v0.2-to-v0.3` from Claude Code, Cursor, Codex or any [skills.sh](https://www.skills.sh/)-compatible client. Coming from `0.1.x`? Run the `v0.1-to-v0.2` skill first.
+
+Two things did change, and neither affects code that follows this README:
+
+**`createRadixThemePlugin()` now returns `render` as a function** instead of a
+JSX element, which is the only form the devtools shell passes its props to. If
+you pass the whole plugin object into `<TanStackDevtools plugins={[…]} />` —
+the documented usage — the shell accepts both forms and you will not notice.
+You only need to act if you read `plugin.render` yourself:
+
+```tsx
+// Before
+<div>{plugin.render}</div>
+
+// After
+<div>{plugin.render(el, { theme: 'light', devtoolsOpen: true })}</div>
+```
+
+**The optional `@tanstack/devtools-event-client` peer floor moved** from
+`>=0.0.1` to `>=0.4.0`. The old range accepted versions predating the
+`EventClient` API this plugin calls. If your package manager warns about an
+unmet peer, upgrade that package; if you never import `/plugin`, ignore it.
+
+### What's new
+
+|                  |                                                                                                                                                    |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`             | The plugin now declares a stable `'radix-themes'`, so the shell can persist whether the panel is open. Override it only to mount the plugin twice. |
+| `defaultOpen`    | Open the panel on first load.                                                                                                                      |
+| Shell appearance | The panel follows the devtools shell into dark mode instead of drawing itself with fixed light colours.                                            |
+| `/plugin-noop`   | A new entry point exporting `createRadixThemeNoOpPlugin()`, for swapping the panel out in production builds.                                       |
+
+---
+
 ## Migrating from `0.1.x`
 
 The `0.2.0` release reshapes the API so the provider stops pulling devtools code into production bundles.

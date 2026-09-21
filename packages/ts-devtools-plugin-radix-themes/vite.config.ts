@@ -16,6 +16,7 @@ export default defineConfig({
         index: resolve(__dirname, 'src/index.ts'),
         provider: resolve(__dirname, 'src/provider.tsx'),
         plugin: resolve(__dirname, 'src/plugin.tsx'),
+        'plugin-noop': resolve(__dirname, 'src/plugin-noop.tsx'),
       },
       formats: ['es', 'cjs'],
       fileName: (format, entryName) =>

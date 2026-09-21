@@ -7,6 +7,9 @@ export { RadixThemeProvider } from './provider';
 export type { RadixThemeProviderProps } from './provider';
 
 export { createRadixThemePlugin } from './plugin';
+export type { RadixThemePlugin } from './plugin';
+
+export { createRadixThemeNoOpPlugin } from './plugin-noop';
 
 export { RadixThemeEventClient } from './client';
 

@@ -11,6 +11,8 @@ export { createRadixThemePlugin } from './plugin';
 export { RadixThemeEventClient } from './client';
 
 export type {
+  DevtoolsShellPluginProps,
+  DevtoolsShellTheme,
   RadixThemeConfig,
   RadixThemeEvents,
   RadixThemePluginOptions,

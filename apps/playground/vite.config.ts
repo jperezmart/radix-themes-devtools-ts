@@ -1,11 +1,11 @@
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
 const pkgRoot = resolve(
-  __dirname,
+  import.meta.dirname,
   '../../packages/ts-devtools-plugin-radix-themes/src',
 );
 

@@ -7,12 +7,18 @@ import { describe, expect, it } from 'vitest';
 
 const FIXTURES = resolve(__dirname, '__fixtures__');
 
+interface Bundle {
+  /** Concatenated JS of every emitted chunk. */
+  code: string;
+  /** External modules the bundle still imports, static and dynamic. */
+  imports: string[];
+}
+
 /**
  * Bundle a synthetic consumer entry the way a real downstream app would
- * (react and friends marked external) and return the concatenated JS output
- * so the tests can scan for forbidden / required strings.
+ * (react and friends marked external) and report what survived.
  */
-async function bundleConsumer(fixture: string): Promise<string> {
+async function bundleConsumer(fixture: string): Promise<Bundle> {
   const result = await build({
     logLevel: 'silent',
     configFile: false,
@@ -37,51 +43,67 @@ async function bundleConsumer(fixture: string): Promise<string> {
     },
   });
 
-  const outputs = Array.isArray(result) ? result : [result];
-  return outputs
-    .flatMap(o => ('output' in o ? o.output : []))
-    .map(chunk => ('code' in chunk ? chunk.code : ''))
-    .join('\n');
+  const chunks = (Array.isArray(result) ? result : [result]).flatMap(o =>
+    'output' in o ? o.output : [],
+  );
+
+  return {
+    code: chunks.map(c => ('code' in c ? c.code : '')).join('\n'),
+    imports: chunks.flatMap(c => ('imports' in c ? c.imports : [])),
+  };
+}
+
+/**
+ * Whether an identifier survived into the bundle.
+ *
+ * Deliberately not a substring check on the raw code: the bundler preserves
+ * comments, and `provider.tsx` has one that names
+ * `@tanstack/devtools-event-client` precisely to say it does not import it.
+ * Module-level questions go to `imports` instead, which is the module graph
+ * rather than the text.
+ */
+function declares(bundle: Bundle, identifier: string): boolean {
+  return new RegExp(`\\b${identifier}\\b`).test(bundle.code);
 }
 
 describe('bundle hygiene', () => {
   it('importing only RadixThemeProvider does NOT pull in devtools or panel', async () => {
-    const code = await bundleConsumer('consumer-provider-only.tsx');
+    const bundle = await bundleConsumer('consumer-provider-only.tsx');
 
     // No event client / devtools bus
-    expect(code).not.toContain('@tanstack/devtools-event-client');
-    expect(code).not.toContain('EventClient');
+    expect(bundle.imports).not.toContain('@tanstack/devtools-event-client');
+    expect(declares(bundle, 'EventClient')).toBe(false);
 
     // No panel UI
-    expect(code).not.toContain('RadixThemePanel');
-    expect(code).not.toContain('ACCENT_COLORS');
+    expect(declares(bundle, 'RadixThemePanel')).toBe(false);
+    expect(declares(bundle, 'ACCENT_COLORS')).toBe(false);
 
     // Plugin factory should not be present either
-    expect(code).not.toContain('createRadixThemePlugin');
+    expect(declares(bundle, 'createRadixThemePlugin')).toBe(false);
 
     // Sanity: provider IS present
-    expect(code).toContain('RadixThemeProvider');
+    expect(declares(bundle, 'RadixThemeProvider')).toBe(true);
   }, 30_000);
 
   it('importing only createRadixThemeNoOpPlugin drops the panel and the bus', async () => {
-    const code = await bundleConsumer('consumer-noop-plugin.tsx');
+    const bundle = await bundleConsumer('consumer-noop-plugin.tsx');
 
-    expect(code).toContain('createRadixThemeNoOpPlugin');
+    expect(declares(bundle, 'createRadixThemeNoOpPlugin')).toBe(true);
 
     // The no-op is the prod swap for createRadixThemePlugin; it is worth
     // nothing if the bundler still drags the real one's payload along.
-    expect(code).not.toContain('@tanstack/devtools-event-client');
-    expect(code).not.toContain('EventClient');
-    expect(code).not.toContain('RadixThemePanel');
-    expect(code).not.toContain('ACCENT_COLORS');
+    expect(bundle.imports).not.toContain('@tanstack/devtools-event-client');
+    expect(declares(bundle, 'EventClient')).toBe(false);
+    expect(declares(bundle, 'RadixThemePanel')).toBe(false);
+    expect(declares(bundle, 'ACCENT_COLORS')).toBe(false);
   }, 30_000);
 
   it('importing createRadixThemePlugin DOES pull in the event client', async () => {
-    const code = await bundleConsumer('consumer-plugin.tsx');
+    const bundle = await bundleConsumer('consumer-plugin.tsx');
 
     // The plugin entry needs the bus; confirm we are not accidentally
     // tree-shaking it away (which would be a regression in the other direction).
-    expect(code).toContain('@tanstack/devtools-event-client');
-    expect(code).toContain('createRadixThemePlugin');
+    expect(bundle.imports).toContain('@tanstack/devtools-event-client');
+    expect(declares(bundle, 'createRadixThemePlugin')).toBe(true);
   }, 30_000);
 });

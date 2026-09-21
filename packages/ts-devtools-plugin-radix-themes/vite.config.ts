@@ -13,10 +13,10 @@ export default defineConfig({
   build: {
     lib: {
       entry: {
-        index: resolve(__dirname, 'src/index.ts'),
-        provider: resolve(__dirname, 'src/provider.tsx'),
-        plugin: resolve(__dirname, 'src/plugin.tsx'),
-        'plugin-noop': resolve(__dirname, 'src/plugin-noop.tsx'),
+        index: resolve(import.meta.dirname, 'src/index.ts'),
+        provider: resolve(import.meta.dirname, 'src/provider.tsx'),
+        plugin: resolve(import.meta.dirname, 'src/plugin.tsx'),
+        'plugin-noop': resolve(import.meta.dirname, 'src/plugin-noop.tsx'),
       },
       formats: ['es', 'cjs'],
       fileName: (format, entryName) =>

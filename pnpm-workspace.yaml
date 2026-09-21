@@ -4,18 +4,20 @@ packages:
 
 # pnpm >= 10 blocks a dependency's build scripts until they are declared here,
 # and without this `pnpm install` exits 1 with ERR_PNPM_IGNORED_BUILDS, which
-# would fail release.yml at its install step. Only esbuild is reported — two
-# copies of it, pulled in by vite and vitest.
+# would fail release.yml at its install step. Only esbuild is reported — one
+# copy, 0.27.7, shared by vite, vitest, tsx and vite-plugin-dts. (It was two
+# copies until Vite 8 moved the bundling to Rolldown and the versions
+# converged.)
 #
 # Declined rather than approved, keeping script execution out of the install
 # that release.yml shares. Ticket 18's correction — a declined build can hide
 # its cost in a cache outside the repo, so a local pass proves nothing — does
 # not apply here, and the reason is structural rather than "it worked on this
-# machine": esbuild's binary is a lockfile-recorded optional dependency (104
-# `@esbuild/*` entries across the two versions, cpu/os-gated, including the
-# linux-x64 a runner installs), and install.js only downloads when
-# `require.resolve` of that package fails, which it cannot. The full command
-# chain — build, typecheck, lint, test — is verified with the build declined.
+# machine": esbuild's binary is a lockfile-recorded optional dependency (52
+# `@esbuild/*` entries, cpu/os-gated, including the linux-x64 a runner
+# installs), and install.js only downloads when `require.resolve` of that
+# package fails, which it cannot. The full command chain — build, typecheck,
+# lint, test — is verified with the build declined.
 allowBuilds:
   esbuild: false
 
@@ -23,8 +25,18 @@ allowBuilds:
 # packages this owner publishes. This block is contract item 10 of
 # jperezmart/package-template, copied verbatim and not tailored per repo; the
 # README there carries the four things the keys do not say for themselves.
+#
+# One deviation from verbatim: `minimumReleaseAgeExcludePrune` is `false`.
+# With it on, pnpm drops any exclusion it cannot match against the current
+# dependency graph, and neither `ts-devtools-plugin-radix-themes` (this repo's
+# own published package, never its own dependency) nor `tw-preset-radix` (a
+# sibling repo's) is ever in that graph. So every `pnpm install` deleted both
+# lines and left the tree dirty. Pruning off keeps the list as written and as
+# the template intends.
 minimumReleaseAge: 1440
 minimumReleaseAgeStrict: true
-minimumReleaseAgeExcludePrune: true
+minimumReleaseAgeExcludePrune: false
 minimumReleaseAgeExclude:
   - '@jperezmart/*'
+  - ts-devtools-plugin-radix-themes
+  - tw-preset-radix

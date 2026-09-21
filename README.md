@@ -18,7 +18,10 @@ ts-devtools-plugin-radix-themes/
 
 ## Development
 
-**Requirements:** Node ≥ 20, pnpm ≥ 9
+**Requirements:** Node ≥ 24.20 (see `devEngines` in the root `package.json`), pnpm ≥ 11
+
+The published package still supports Node ≥ 20 — the floor above is the dev
+toolchain's, not the library's.
 
 ```bash
 pnpm install

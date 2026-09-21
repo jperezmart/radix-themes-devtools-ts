@@ -137,9 +137,14 @@ The latest theme is kept in a module-level cache so it survives provider remount
 
 Creates the plugin object to pass to `<TanStackDevtools plugins={[...]} />`.
 
-| Option         | Type               | Description                         |
-| -------------- | ------------------ | ----------------------------------- |
-| `defaultTheme` | `RadixThemeConfig` | Initial theme values for the panel. |
+| Option         | Type               | Default          | Description                                                                                     |
+| -------------- | ------------------ | ---------------- | ----------------------------------------------------------------------------------------------- |
+| `defaultTheme` | `RadixThemeConfig` | —                | Initial theme values for the panel.                                                             |
+| `id`           | `string`           | `'radix-themes'` | Key the shell persists this panel's open/closed state under. Override only to mount twice.      |
+| `defaultOpen`  | `boolean`          | `false`          | Open this panel on first load, before the shell has a stored choice. At most three may be open. |
+
+The panel follows the devtools shell's own light/dark appearance: the shell
+passes it down through `render`, so the panel chrome stays legible in both.
 
 Returns `{ name, render, client }`. The `client` is the underlying `RadixThemeEventClient` if you want to listen to theme changes programmatically — though most apps don't need it.
 

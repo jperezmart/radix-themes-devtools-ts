@@ -28,5 +28,3 @@ minimumReleaseAgeStrict: true
 minimumReleaseAgeExcludePrune: true
 minimumReleaseAgeExclude:
   - '@jperezmart/*'
-  - ts-devtools-plugin-radix-themes
-  - tw-preset-radix

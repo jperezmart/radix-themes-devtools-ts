@@ -40,6 +40,11 @@
       "import": "./dist/plugin.js",
       "require": "./dist/plugin.cjs"
     },
+    "./plugin-noop": {
+      "types": "./dist/plugin-noop.d.ts",
+      "import": "./dist/plugin-noop.js",
+      "require": "./dist/plugin-noop.cjs"
+    },
     "./package.json": "./package.json"
   },
   "main": "./dist/index.cjs",
@@ -60,6 +65,7 @@
   "devDependencies": {
     "@radix-ui/themes": "^3.3.0",
     "@tanstack/devtools-event-client": "^0.5.0",
+    "@tanstack/devtools-utils": "^0.7.0",
     "@testing-library/jest-dom": "^6.10.0",
     "@testing-library/react": "^16.3.3",
     "@types/node": "^25.9.8",

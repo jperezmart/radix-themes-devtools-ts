@@ -44,13 +44,14 @@ npm install @tanstack/react-devtools @tanstack/devtools-event-client
 
 ## Usage
 
-The package exposes two independent entry points so that the dev-only code can be stripped from your production bundle:
+The package exposes independent entry points so that the dev-only code can be stripped from your production bundle:
 
-| Entry                                      | Used in        | What it ships                                     |
-| ------------------------------------------ | -------------- | ------------------------------------------------- |
-| `ts-devtools-plugin-radix-themes/provider` | **dev + prod** | `<RadixThemeProvider>` — wraps Radix's `<Theme>`  |
-| `ts-devtools-plugin-radix-themes/plugin`   | **dev only**   | `createRadixThemePlugin()` — panel + event client |
-| `ts-devtools-plugin-radix-themes` (barrel) | convenience    | re-exports both (no tree-shaking advantage)       |
+| Entry                                         | Used in        | What it ships                                               |
+| --------------------------------------------- | -------------- | ----------------------------------------------------------- |
+| `ts-devtools-plugin-radix-themes/provider`    | **dev + prod** | `<RadixThemeProvider>` — wraps Radix's `<Theme>`            |
+| `ts-devtools-plugin-radix-themes/plugin`      | **dev only**   | `createRadixThemePlugin()` — panel + event client           |
+| `ts-devtools-plugin-radix-themes/plugin-noop` | **prod**       | `createRadixThemeNoOpPlugin()` — tab metadata, nothing else |
+| `ts-devtools-plugin-radix-themes` (barrel)    | convenience    | re-exports all of them (no tree-shaking advantage)          |
 
 ### 1. Wrap your app with `<RadixThemeProvider>`
 
@@ -132,6 +133,36 @@ The plugin/panel side (`/plugin`) still uses `EventClient` because that's what T
 | `style`        | `React.CSSProperties` |          |         | Forwarded to `<Theme>`                               |
 
 The latest theme is kept in a module-level cache so it survives provider remounts within the same session.
+
+### `createRadixThemeNoOpPlugin(options?)`
+
+The production counterpart of `createRadixThemePlugin`, mirroring the
+`NoOpPlugin` half of the `[Plugin, NoOpPlugin]` tuple that
+[`createReactPlugin`](https://tanstack.com/devtools/latest/docs/devtools-utils)
+returns. Same tab metadata, a `render` that draws nothing, no event client.
+
+Reach for it when the app builds its `plugins` array in one shared place and
+importing `/plugin` conditionally is awkward. Swapping the factory lets the
+bundler fold the branch and drop the panel and the bus entirely:
+
+```tsx
+import { createRadixThemePlugin } from 'ts-devtools-plugin-radix-themes/plugin';
+import { createRadixThemeNoOpPlugin } from 'ts-devtools-plugin-radix-themes/plugin-noop';
+
+const createPlugin =
+  process.env.NODE_ENV === 'development'
+    ? createRadixThemePlugin
+    : createRadixThemeNoOpPlugin;
+```
+
+It lives on its own entry point deliberately: `/plugin` constructs the event
+client and calls `lazy(() => import('./panel'))` at module scope, so merely
+importing that module pulls both into the bundle no matter which factory you
+call.
+
+> Upstream's `createReactPlugin` is not used directly because it is ESM-only
+> and this package publishes CJS entries. A conformance test keeps the plugin
+> objects matching the shape it produces.
 
 ### `createRadixThemePlugin(options?)`
 

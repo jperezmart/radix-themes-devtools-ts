@@ -63,6 +63,19 @@ describe('bundle hygiene', () => {
     expect(code).toContain('RadixThemeProvider');
   }, 30_000);
 
+  it('importing only createRadixThemeNoOpPlugin drops the panel and the bus', async () => {
+    const code = await bundleConsumer('consumer-noop-plugin.tsx');
+
+    expect(code).toContain('createRadixThemeNoOpPlugin');
+
+    // The no-op is the prod swap for createRadixThemePlugin; it is worth
+    // nothing if the bundler still drags the real one's payload along.
+    expect(code).not.toContain('@tanstack/devtools-event-client');
+    expect(code).not.toContain('EventClient');
+    expect(code).not.toContain('RadixThemePanel');
+    expect(code).not.toContain('ACCENT_COLORS');
+  }, 30_000);
+
   it('importing createRadixThemePlugin DOES pull in the event client', async () => {
     const code = await bundleConsumer('consumer-plugin.tsx');
 

@@ -40,8 +40,7 @@ export function RadixThemeProvider({
 
     const onChanged = (e: Event) => {
       const detail = (e as CustomEvent).detail as
-        | { payload?: RadixThemeConfig }
-        | undefined;
+        { payload?: RadixThemeConfig } | undefined;
       if (detail?.payload) {
         cachedTheme = detail.payload;
         setTheme(detail.payload);

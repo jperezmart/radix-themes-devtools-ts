@@ -16,8 +16,8 @@
     "@changesets/changelog-github": "^1.0.1",
     "@changesets/cli": "^3.0.3",
     "@jperezmart/prettier-config": "^1.0.0",
-    "prettier": "^3.9.8",
-    "turbo": "^2.11.2",
+    "prettier": "^3.9.9",
+    "turbo": "^2.11.5",
     "typescript": "^5.9.3"
   },
   "packageManager": "pnpm@11.25.0",

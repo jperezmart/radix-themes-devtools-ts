@@ -50,3 +50,8 @@ skills/
 # rewritten it. Adopting the shared config only made the churn bigger (semicolons
 # and `printWidth: 80` on top of the quote style), which is what made it visible.
 apps/playground/src/routeTree.gen.ts
+
+# Agent skills vendored from mattpocock/skills and pinned by hash in
+# skills-lock.json: formatting them would drift from the recorded hashes.
+.agents
+skills-lock.json
